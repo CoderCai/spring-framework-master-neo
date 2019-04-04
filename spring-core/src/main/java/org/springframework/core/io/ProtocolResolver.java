@@ -19,6 +19,7 @@ package org.springframework.core.io;
 import org.springframework.lang.Nullable;
 
 /**
+ * 自定义加载策略
  * A resolution strategy for protocol-specific resource handles.
  *
  * <p>Used as an SPI for {@link DefaultResourceLoader}, allowing for
