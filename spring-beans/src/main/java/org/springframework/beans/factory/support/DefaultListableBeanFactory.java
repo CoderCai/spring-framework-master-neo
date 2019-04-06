@@ -331,6 +331,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	// Implementation of remaining BeanFactory methods
 	//---------------------------------------------------------------------
 
+	//触发bean的初始化(加载)
 	@Override
 	public <T> T getBean(Class<T> requiredType) throws BeansException {
 		return getBean(requiredType, (Object[]) null);
@@ -338,6 +339,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	@Override
 	public <T> T getBean(Class<T> requiredType, @Nullable Object... args) throws BeansException {
+		//实例化
 		NamedBeanHolder<T> namedBean = resolveNamedBean(requiredType, args);
 		if (namedBean != null) {
 			return namedBean.getBeanInstance();

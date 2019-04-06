@@ -76,12 +76,37 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/** Logger available to subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	/**
+	 * Cache of singleton objects: bean name to bean instance.
+	 *
+	 * 存放的是单例 bean 的映射。
+	 *
+	 * 对应关系为 bean name --> bean instance
+	 */
 	/** Cache of singleton objects: bean name --> bean instance */
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
+	/**
+	 * Cache of singleton factories: bean name to ObjectFactory.
+	 *
+	 * 存放的是 ObjectFactory，可以理解为创建单例 bean 的 factory 。
+	 *
+	 * 对应关系是 bean name --> ObjectFactory
+	 **/
 	/** Cache of singleton factories: bean name --> ObjectFactory */
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
+	/**
+	 * Cache of early singleton objects: bean name to bean instance.
+	 *
+	 * 存放的是早期的 bean，对应关系也是 bean name --> bean instance。
+	 *
+	 * 它与 {@link #singletonFactories} 区别在于 earlySingletonObjects 中存放的 bean 不一定是完整。
+	 *
+	 * 从 {@link #getSingleton(String)} 方法中，我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了。
+	 * 所以当在 bean 的创建过程中，就可以通过 getBean() 方法获取。
+	 *
+	 * 这个 Map 也是【循环依赖】的关键所在。
 	/** Cache of early singleton objects: bean name --> bean instance */
 	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
@@ -180,11 +205,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+		//单例缓存
 		Object singletonObject = this.singletonObjects.get(beanName);
+		//未缓存并且正在创建
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			synchronized (this.singletonObjects) {
 				singletonObject = this.earlySingletonObjects.get(beanName);
 				if (singletonObject == null && allowEarlyReference) {
+					//bean工厂
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
 						singletonObject = singletonFactory.getObject();
