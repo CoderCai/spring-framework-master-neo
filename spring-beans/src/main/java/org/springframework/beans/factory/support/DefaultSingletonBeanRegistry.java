@@ -210,13 +210,19 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		//未缓存并且正在创建
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			synchronized (this.singletonObjects) {
+				//从earlySingletonObjects中获取，bea在创建的过程中就会加入该list，见第222行
+				//本方法getSingleton返回的是raw singleton object，是一个没有完全准备好的数据
+				//提前放入earlySingletonObjects，可以被其他需要单例的地方引用
 				singletonObject = this.earlySingletonObjects.get(beanName);
+				//如果还是没有，则利用Factory创建
 				if (singletonObject == null && allowEarlyReference) {
-					//bean工厂
+					//bean工厂，TODO 什么时候生成的BeanFactory??
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
 						singletonObject = singletonFactory.getObject();
+						//放回到earlySingletonObjects
 						this.earlySingletonObjects.put(beanName, singletonObject);
+						//清除单例工厂，只允许一次创建，下次再创建时，工厂类已经不存在
 						this.singletonFactories.remove(beanName);
 					}
 				}
