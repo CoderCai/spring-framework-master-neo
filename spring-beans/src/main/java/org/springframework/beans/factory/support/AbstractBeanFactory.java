@@ -267,6 +267,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			// 这样一旦下一个 Bean 创建的时候需要依赖 bean 时则直接使用 ObjectFactroy 。
 			//但是原型( Prototype )模式，我们知道是没法使用缓存的，
 			// 所以 Spring 对原型模式的循环依赖处理策略则是不处理。
+			// 原型模式下，发生循环依赖直接抛异常
+			// 循环依赖如何判断？
+			// A依赖B，在初始化A的过程中触发B初始化，由于B又依赖A，在初始化B的过程中会再次触发初始化B
+			// 此时可在此检测到A已经在创建过程中了，可以确定这是发生了循环依赖！！！
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
 			if (isPrototypeCurrentlyInCreation(beanName)) {
