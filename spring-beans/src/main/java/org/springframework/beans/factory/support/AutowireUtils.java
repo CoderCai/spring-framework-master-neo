@@ -57,6 +57,7 @@ abstract class AutowireUtils {
 	 * decreasing number of arguments.
 	 * @param constructors the constructor array to sort
 	 */
+	//排序构造函数
 	public static void sortConstructors(Constructor<?>[] constructors) {
 		Arrays.sort(constructors, new Comparator<Constructor<?>>() {
 			@Override
